@@ -84,6 +84,9 @@
 % |ifpdf| package will get support for this and we can drop |ifxetex|.
 % We also work around ancient \TeX{} distributions that don't have
 % |ifxetex| and assume that they don't have XeTeX.
+% (The code to cope with pTeX was taught by
+% https://twitter.com/aminophen/status/712258605546770432
+% ).
 %    \begin{macrocode}
 \RequirePackage{makecmds}
 \RequirePackage{ifpdf}
@@ -93,6 +96,13 @@
 }{
   \newboolean{xetex}
   \setboolean{xetex}{false}}
+\ifx\kanjiskip\undefined
+% not pTeX
+\else
+% pTeX
+  \newboolean{ptex}
+  \setboolean{ptex}{True}
+\fi
 %    \end{macrocode}
 %
 % Next set up the counters, default indent, and flags.
@@ -473,7 +483,7 @@ except:^^J
 % If we are creating a PDF, we check to see if the user asked for a
 % different format, and use that if necessary:
 %    \begin{macrocode}
-\ifthenelse{\boolean{pdf} \or \boolean{xetex}}{
+\ifthenelse{\boolean{pdf} \or \boolean{xetex} \or \boolean{ptex}}{
   \ifthenelse{\equal{#2}{notprovided}}%
     {\ST@inclgrfx{#1}{pdf}}%
     {\ST@inclgrfx{#1}{#2}}}
